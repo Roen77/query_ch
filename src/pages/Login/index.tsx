@@ -1,6 +1,8 @@
 import axios from "axios";
 import React, { useCallback, useState } from "react";
+import { useQuery } from "react-query";
 import useInput from "../../hooks/useInput";
+import fetcher from "../../utils/fetcher";
 import {
   Button,
   Form,
@@ -12,6 +14,10 @@ import {
 } from "../Signup/styles";
 
 const LogIn = () => {
+  const { isLoading, isSuccess, status, isError, data, error } = useQuery(
+    "user",
+    () => fetcher({ queryKey: "http://localhost:3095/api/users" })
+  );
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput("");
   const [password, onChangePassword] = useInput("");
