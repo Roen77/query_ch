@@ -1,14 +1,21 @@
 import axios from 'axios';
-import React, { useCallback, VFC } from 'react'
+import React, { useCallback,  } from 'react'
 import { useQuery, useQueryClient } from 'react-query';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import fetcher from '../../utils/fetcher';
-
+import { Channels, Chats, Header, MenuScroll, ProfileImg, RightMenu, WorkspaceName, Workspaces, WorkspaceWrapper } from './styles';
+import gravatar from 'gravatar'
+import loadable from '@loadable/component';
 type Props = {
     children?: React.ReactNode
   };
 
-function Workspace({children}:Props) {
+
+  const Channel = loadable(() => import('../../pages/Channel'))
+const DirectMessage = loadable(() => import('../../pages/DirectMessage'))
+
+// function Workspace({children}:Props) {
+function Workspace() {
     const queryClient = useQueryClient();
     const { data } = useQuery(
         "user",
@@ -45,10 +52,28 @@ if(!data){
   return <Navigate to="/login"/>
 }
   return (
-    <div>
-    <button onClick={onLogout}>로그아웃</button>
-    {children}
-    </div>
+   <div>
+     <Header>
+        <RightMenu>
+          <span>
+            <ProfileImg src={gravatar.url(data.nickname,{s:'26',d:'retro'})} alt={data.nickname} />
+          </span>
+        </RightMenu>
+      </Header>
+      <WorkspaceWrapper>
+        <Workspaces>tt</Workspaces>
+        <Channels>
+          <WorkspaceName>-_-</WorkspaceName>
+          <MenuScroll>scroll</MenuScroll>
+        </Channels>
+        <Chats>
+        <Routes>
+          <Route path='channel/:channel' element={<Channel/>} />
+          <Route path='dm/:id' element={<DirectMessage/>} />
+        </Routes>
+        </Chats>
+      </WorkspaceWrapper>
+   </div>
 
   )
 }
