@@ -1,7 +1,9 @@
 import axios from "axios";
 import React, { useCallback, useState } from "react";
-import { Link } from "react-router-dom";
+import { useQuery } from "react-query";
+import { Link, Navigate } from "react-router-dom";
 import useInput from "../../hooks/useInput";
+import fetcher from "../../utils/fetcher";
 import {
   Button,
   Error,
@@ -14,6 +16,10 @@ import {
 } from "./styles";
 
 function Signup() {
+  const { isLoading, isSuccess, status, isError, data, error } = useQuery(
+    "user",
+    () => fetcher({ queryKey: "http://localhost:3105/api/users", log:'signup' })
+  );
   const [email, onChangeEmail] = useInput("");
   const [password, , setPassword] = useInput("");
   const [nickname, onChangeNickname] = useInput("");
@@ -52,7 +58,7 @@ function Signup() {
       setSignUpError("");
       setSignUpSuccess(false);
       axios
-        .post("http://localhost:3095/api/users", {
+        .post("http://localhost:3105/api/users", {
           email,
           nickname,
           password,
@@ -68,6 +74,10 @@ function Signup() {
     },
     [email, password, nickname]
   );
+
+  if(data){
+    return <Navigate to="/workspace/1"/>
+  }
 
   return (
     <div id="container">

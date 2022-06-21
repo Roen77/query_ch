@@ -1,7 +1,9 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import React, { useCallback, useState } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { Navigate, useNavigate } from "react-router-dom";
 import useInput from "../../hooks/useInput";
+import { IUser } from "../../typings/db";
 import fetcher from "../../utils/fetcher";
 import {
   Button,
@@ -13,37 +15,68 @@ import {
   Error,
 } from "../Signup/styles";
 
-const LogIn = () => {
+const Login = () => {
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
   const { isLoading, isSuccess, status, isError, data, error } = useQuery(
     "user",
-    () => fetcher({ queryKey: "http://localhost:3095/api/users" })
+    () => fetcher({ queryKey: "http://localhost:3105/api/users", log:'login' })
   );
+
+  const mutation = useMutation<IUser, AxiosError,{email:string,password:string}>("user",(data) =>
+    axios
+    .post(
+      "http://localhost:3105/api/users/login",
+      data,
+      {
+        withCredentials: true,
+      }
+    ).then((response) => response.data),
+    {
+        onMutate(){
+            setLogInError(false)
+        },
+        onSuccess(){
+            queryClient.refetchQueries('user')
+        }
+    }
+  )
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput("");
   const [password, onChangePassword] = useInput("");
   const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      setLogInError(false);
-      axios
-        .post(
-          "http://localhost:3095/api/users/login",
-          { email, password },
-          {
-            withCredentials: true,
-          }
-        )
-        .then(() => {})
-        .catch((error) => {
-          setLogInError(error.response?.data?.code === 401);
-        });
+      mutation.mutate({email,password});
+    //   setLogInError(false);
+    //   axios
+    //     .post(
+    //       "http://localhost:3105/api/users/login",
+    //       { email, password },
+    //       {
+    //         withCredentials: true,
+    //       }
+    //     )
+    //     .then(() => {})
+    //     .catch((error) => {
+    //       setLogInError(error.response?.data?.code === 401);
+    //     });
+    // },
     },
-    [email, password]
+    [email, password, mutation]
   );
 
+
+  if (isLoading) {
+    return <div>로딩중...</div>;
+  }
+
+  if(data){
+  return <Navigate to="/workspace/1"/>
+  }
   return (
     <div id="container">
-      <Header>signin</Header>
+      <Header>sign</Header>
       <Form onSubmit={onSubmit}>
         <Label id="email-label">
           <span>이메일 주소</span>
@@ -82,4 +115,4 @@ const LogIn = () => {
   );
 };
 
-export default LogIn;
+export default Login;

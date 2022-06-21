@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import loadable from '@loadable/component'
+import Workspace from './layouts/Workspace';
 
 
 const Login = loadable(() => import('./pages/Login'))
@@ -14,7 +15,7 @@ function App() {
       <Route path='/' element={<Login/>}></Route>
       <Route path='/login' element={<Login/>}></Route>
       <Route path='/signup' element={<Signup/>}></Route>
-      <Route path='/workspace/:workspace/*' element={<Login/>}></Route>
+      <Route path='/workspace/:workspace/*' element={<Workspace/>}></Route>
     </Routes>
   );
 }
