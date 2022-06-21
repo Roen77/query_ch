@@ -16,63 +16,66 @@ import {
 } from "../Signup/styles";
 
 const Login = () => {
-    const queryClient = useQueryClient();
-    const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { isLoading, isSuccess, status, isError, data, error } = useQuery(
     "user",
-    () => fetcher({ queryKey: "http://localhost:3105/api/users", log:'login' })
+    () => fetcher({ queryKey: "http://localhost:3105/api/users", log: "login" })
   );
 
-  const mutation = useMutation<IUser, AxiosError,{email:string,password:string}>("user",(data) =>
-    axios
-    .post(
-      "http://localhost:3105/api/users/login",
-      data,
-      {
-        withCredentials: true,
-      }
-    ).then((response) => response.data),
+  const mutation = useMutation<
+    IUser,
+    AxiosError,
+    { email: string; password: string }
+  >(
+    "user",
+    (data) =>
+      axios
+        .post("http://localhost:3105/api/users/login", data, {
+          withCredentials: true,
+        })
+        .then((response) => response.data),
     {
-        onMutate(){
-            setLogInError(false)
-        },
-        onSuccess(){
-            queryClient.refetchQueries('user')
-        }
+      onMutate() {
+        setLogInError(false);
+      },
+      onSuccess() {
+        queryClient.refetchQueries("user");
+      },
     }
-  )
+  );
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput("");
   const [password, onChangePassword] = useInput("");
   const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      mutation.mutate({email,password});
-    //   setLogInError(false);
-    //   axios
-    //     .post(
-    //       "http://localhost:3105/api/users/login",
-    //       { email, password },
-    //       {
-    //         withCredentials: true,
-    //       }
-    //     )
-    //     .then(() => {})
-    //     .catch((error) => {
-    //       setLogInError(error.response?.data?.code === 401);
-    //     });
-    // },
+      mutation.mutate({ email, password });
+      //   setLogInError(false);
+      //   axios
+      //     .post(
+      //       "http://localhost:3105/api/users/login",
+      //       { email, password },
+      //       {
+      //         withCredentials: true,
+      //       }
+      //     )
+      //     .then(() => {})
+      //     .catch((error) => {
+      //       setLogInError(error.response?.data?.code === 401);
+      //     });
+      // },
     },
     [email, password, mutation]
   );
-
 
   if (isLoading) {
     return <div>로딩중...</div>;
   }
 
-  if(data){
-  return <Navigate to="/workspace/1"/>
+  if (data) {
+    // return <Navigate to="/workspace/1/channel/4" />;
+    return <Navigate to="/workspace/sleact/channel/일반" />;
   }
   return (
     <div id="container">
