@@ -3,6 +3,7 @@ import React, { useCallback, VFC } from "react";
 import { useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import request from "../../api/api";
 import useInput from "../../hooks/useInput";
 import { Button, Input, Label } from "../../pages/Signup/styles";
 import Modal from "../Modal";
@@ -12,11 +13,11 @@ interface Props {
   onCloseModal: () => void;
   setShowCreateChannelModal: (flag: boolean) => void;
 }
-const CreateChannelModal: VFC<Props> = ({
+const CreateChannelModal = ({
   show,
   onCloseModal,
   setShowCreateChannelModal,
-}) => {
+}:Props) => {
   const queryClient = useQueryClient();
   const [newChannel, onChangeNewChannel, setNewChannel] = useInput("");
   const { workspace } = useParams<{ workspace: string; channel: string }>();
@@ -24,9 +25,9 @@ const CreateChannelModal: VFC<Props> = ({
   const onCreateChannel = useCallback(
     (e: any) => {
       e.preventDefault();
-      axios
+     request
         .post(
-          `http://localhost:3105/api/workspaces/${workspace}/channels`,
+          `/api/workspaces/${workspace}/channels`,
           {
             name: newChannel,
           },

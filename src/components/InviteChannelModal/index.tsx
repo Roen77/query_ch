@@ -3,6 +3,7 @@ import React, { FC, useCallback } from "react";
 import { useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import request from "../../api/api";
 import useInput from "../../hooks/useInput";
 import { Button, Input, Label } from "../../pages/Signup/styles";
 import Modal from "../Modal";
@@ -31,9 +32,9 @@ const InviteChannelModal: FC<Props> = ({
         return;
       }
       console.log("invite");
-      axios
+    request
         .post(
-          `http://localhost:3105/api/workspaces/${workspace}/channels/${channel}/members`,
+          `/api/workspaces/${workspace}/channels/${channel}/members`,
           {
             email: newMember,
           }

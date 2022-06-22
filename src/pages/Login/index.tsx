@@ -20,7 +20,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { isLoading, isSuccess, status, isError, data, error } = useQuery(
     "user",
-    () => fetcher({ queryKey: "http://localhost:3105/api/users", log: "login" })
+    () => fetcher({ queryKey: "/api/users", log: "login" })
   );
 
   const mutation = useMutation<
@@ -31,7 +31,7 @@ const Login = () => {
     "user",
     (data) =>
       axios
-        .post("http://localhost:3105/api/users/login", data, {
+        .post("/api/users/login", data, {
           withCredentials: true,
         })
         .then((response) => response.data),
@@ -54,7 +54,7 @@ const Login = () => {
       //   setLogInError(false);
       //   axios
       //     .post(
-      //       "http://localhost:3105/api/users/login",
+      //       "/api/users/login",
       //       { email, password },
       //       {
       //         withCredentials: true,

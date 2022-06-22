@@ -1,7 +1,8 @@
-import axios from "axios";
+
 import React, { useCallback, useState } from "react";
 import { useQuery } from "react-query";
 import { Link, Navigate } from "react-router-dom";
+import request from "../../api/api";
 import useInput from "../../hooks/useInput";
 import fetcher from "../../utils/fetcher";
 import {
@@ -18,7 +19,9 @@ import {
 function Signup() {
   const { isLoading, isSuccess, status, isError, data, error } = useQuery(
     "user",
-    () => fetcher({ queryKey: "http://localhost:3105/api/users", log:'signup' })
+    () => fetcher({ queryKey: "/api/users", log:'signup' }),    {
+      staleTime: 2000,
+    }
   );
   const [email, onChangeEmail] = useInput("");
   const [password, , setPassword] = useInput("");
@@ -57,8 +60,8 @@ function Signup() {
       }
       setSignUpError("");
       setSignUpSuccess(false);
-      axios
-        .post("http://localhost:3105/api/users", {
+      request
+        .post("/api/users", {
           email,
           nickname,
           password,

@@ -3,6 +3,7 @@ import React, { FC, useCallback } from "react";
 import { useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import request from "../../api/api";
 import useInput from "../../hooks/useInput";
 import { Button, Input, Label } from "../../pages/Signup/styles";
 import Modal from "../Modal";
@@ -27,8 +28,15 @@ const InviteWorkspaceModal: FC<Props> = ({
       if (!newMember || !newMember.trim()) {
         return;
       }
+      request.post(`/api/workspaces/${workspace}/members`,{
+        email:newMember
+      }).then(res => {
+        queryClient.refetchQueries(['workspace',workspace,'member'])
+        setShowInviteWorkspaceModal(false)
+        setNewMember("")
+      }).catch()
     },
-    [newMember]
+    [newMember, queryClient, setNewMember, setShowInviteWorkspaceModal, workspace]
   );
 
   return (

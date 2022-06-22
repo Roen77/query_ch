@@ -37,6 +37,9 @@ import { toast } from "react-toastify";
 import InviteWorkspaceModal from "../../components/InviteWorkspaceModal";
 import InviteChannelModal from "../../components/InviteChannelModal";
 import CreateChannelModal from "../../components/CreateChannelModal";
+import request from "../../api/api";
+import ChatList from "../../components/ChatList";
+import DMList from "../../components/DMList";
 type Props = {
   children?: React.ReactNode;
 };
@@ -63,7 +66,7 @@ function Workspace() {
     "user",
     () =>
       fetcher({
-        queryKey: "http://localhost:3105/api/users",
+        queryKey: "/api/users",
         log: "workspace",
       }),
     {
@@ -74,7 +77,7 @@ function Workspace() {
     ["workspace", workspace, "channel"],
     () =>
       fetcher({
-        queryKey: `http://localhost:3105/api/workspaces/${workspace}/channels`,
+        queryKey: `/api/workspaces/${workspace}/channels`,
         log: "workspace의 채널 호출",
       }),
     {
@@ -83,11 +86,11 @@ function Workspace() {
   );
   // const { data: data1} = useQuery(
   //     "user",
-  //     () => fetcher({ queryKey: "http://localhost:3105/api/users", log:'workspace' })
+  //     () => fetcher({ queryKey: "/api/users", log:'workspace' })
   //   );
   const onLogout = useCallback(() => {
-    axios
-      .post("http://localhost:3105/api/users/logout", null, {
+    request
+      .post("/api/users/logout", null, {
         withCredentials: true,
       })
       .then(() => {
@@ -99,7 +102,7 @@ function Workspace() {
 
   const onClickProfile = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    setShowUserMenu(false);
+    setShowUserMenu((prev) => !prev);
   }, []);
   const onClickCreateWorkspace = useCallback(() => {
     setShowCreateWorkspaceModal(true);
@@ -111,15 +114,13 @@ function Workspace() {
     setShowInviteChannelModal(false);
   }, []);
   const onCreateWorkspace = useCallback(
-    (e: any) => {
-      console.log("cc1");
+    (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!newWorkspace || !newWorkspace.trim()) return;
       if (!newUrl || !newUrl.trim()) return;
-      console.log("cc");
-      axios
+      request
         .post(
-          "http://localhost:3105/api/workspaces",
+          "/api/workspaces",
           {
             workspace: newWorkspace,
             url: newUrl,
@@ -221,17 +222,8 @@ function Workspace() {
                 <button onClick={onLogout}>로그아웃</button>
               </WorkspaceModal>
             </Menu>
-            {channelData?.map((channel) => {
-              return (
-                <NavLink
-                  key={channel.name}
-                  // activeClassName="selected"
-                  to={`/workspace/${workspace}/channel/${channel.name}`}
-                >
-                  <span># {channel.name}</span>
-                </NavLink>
-              );
-            })}
+           <ChatList/>
+           <DMList/>
           </MenuScroll>
         </Channels>
         <Chats>
