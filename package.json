@@ -16,10 +16,12 @@
     "@types/node": "^16.11.41",
     "@types/react": "^18.0.14",
     "@types/react-dom": "^18.0.5",
+    "autosize": "^5.0.1",
     "axios": "^0.27.2",
     "gravatar": "^1.8.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-mentions": "^4.4.2",
     "react-query": "^3.39.1",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
@@ -50,5 +52,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/autosize": "^4.0.1",
+    "@types/react-mentions": "^4.1.6"
   }
 }
