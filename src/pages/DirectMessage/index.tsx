@@ -142,7 +142,7 @@ function DirectMessage() {
       </Header>
       <ChatList
         //@ts-ignore
-        chatData={chatData.pages[0]}
+        chatData={chatData?.pages[0] || []}
         // chatSections={chatSections}
         // ref={scrollbarRef}
         // fetchNext={fetchNextPage}

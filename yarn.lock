@@ -7971,6 +7971,11 @@
   "resolved" "https://registry.npmjs.org/regex-parser/-/regex-parser-2.2.11.tgz"
   "version" "2.2.11"
 
+"regexify-string@^1.0.17":
+  "integrity" "sha512-mmD0AUNaY/piGW2AyACWdQOjIAwNuWz+KIvxfBZPDdCBAexiROeQxdxTaYAWcIxwtUAOwojdTta6CMMil84jXw=="
+  "resolved" "https://registry.npmjs.org/regexify-string/-/regexify-string-1.0.17.tgz"
+  "version" "1.0.17"
+
 "regexp.prototype.flags@^1.4.1", "regexp.prototype.flags@^1.4.3":
   "integrity" "sha512-fjggEOO3slI6Wvgjwflkc4NFRCTZAu5CnNfBd5qOMYhWdn67nJBBu34/TkD++eeFmd8C9r9jfXJ27+nSiRkSUA=="
   "resolved" "https://registry.npmjs.org/regexp.prototype.flags/-/regexp.prototype.flags-1.4.3.tgz"
