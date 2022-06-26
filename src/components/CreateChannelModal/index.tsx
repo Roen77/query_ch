@@ -1,5 +1,4 @@
-import axios from "axios";
-import React, { useCallback, VFC } from "react";
+import React, { useCallback } from "react";
 import { useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -17,7 +16,7 @@ const CreateChannelModal = ({
   show,
   onCloseModal,
   setShowCreateChannelModal,
-}:Props) => {
+}: Props) => {
   const queryClient = useQueryClient();
   const [newChannel, onChangeNewChannel, setNewChannel] = useInput("");
   const { workspace } = useParams<{ workspace: string; channel: string }>();
@@ -25,7 +24,7 @@ const CreateChannelModal = ({
   const onCreateChannel = useCallback(
     (e: any) => {
       e.preventDefault();
-     request
+      request
         .post(
           `/api/workspaces/${workspace}/channels`,
           {

@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { FC, useCallback } from "react";
 import { useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
@@ -32,13 +31,10 @@ const InviteChannelModal: FC<Props> = ({
         return;
       }
       console.log("invite");
-    request
-        .post(
-          `/api/workspaces/${workspace}/channels/${channel}/members`,
-          {
-            email: newMember,
-          }
-        )
+      request
+        .post(`/api/workspaces/${workspace}/channels/${channel}/members`, {
+          email: newMember,
+        })
         .then(() => {
           queryClient.refetchQueries([
             "workspace",

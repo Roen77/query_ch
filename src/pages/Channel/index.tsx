@@ -1,8 +1,6 @@
 import React, { useCallback } from "react";
-import { useQuery } from "react-query";
 import ChatBox from "../../components/ChatBox";
 import useInput from "../../hooks/useInput";
-import fetcher from "../../utils/fetcher";
 import { Container, Header } from "./styles";
 
 function Channel() {
