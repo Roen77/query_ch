@@ -30,7 +30,6 @@ import InviteWorkspaceModal from "../../components/InviteWorkspaceModal";
 import InviteChannelModal from "../../components/InviteChannelModal";
 import CreateChannelModal from "../../components/CreateChannelModal";
 import request from "../../api/api";
-import ChatList from "../../components/ChatList";
 import DMList from "../../components/DMList";
 import useSocket from "../../hooks/useSocket";
 import ChannelList from "../../components/ChannelList";

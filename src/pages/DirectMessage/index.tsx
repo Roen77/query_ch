@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { Container, Header } from "./styles";
 import gravatar from "gravatar";
 import {
@@ -17,8 +17,10 @@ import { AxiosError } from "axios";
 import request from "../../api/api";
 import ChatList from "../../components/ChatList";
 import makeSection from "../../utils/makeSection";
+import Scrollbars from "react-custom-scrollbars-2";
 function DirectMessage() {
   const queryClient = useQueryClient();
+  const scrollbarRef = useRef<Scrollbars>(null);
   const { workspace, id } = useParams<{ workspace: string; id: string }>();
   const { data: userData } = useQuery(
     ["workspace", workspace, "users", id],
@@ -34,21 +36,27 @@ function DirectMessage() {
     hasNextPage,
   } = useInfiniteQuery<IDM[]>(
     ["workspace", workspace, "dm", id, "chat"],
-    ({ pageParam }: any) =>
+    ({ pageParam = 0 }: any) =>
       fetcher({
-        queryKey: `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=1`,
-        // queryKey: `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=${
-        //   pageParam + 1
-        // }`,
+        // queryKey: `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=1`,
+        queryKey: `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=${
+          pageParam + 1
+        }`,
       }),
     {
       getNextPageParam: (lastPage: any, pages: any) => {
+        console.log("다음 파라미터", lastPage, pages.length);
         if (lastPage.length === 0) return;
         return pages.length;
       },
     }
   );
   const [chat, onChangeChat, setChat] = useInput("");
+  const isEmpty = chatData?.pages[0]?.length === 0;
+  const isReachingEnd =
+    isEmpty ||
+    (chatData && chatData?.pages[chatData?.pages.length - 1]?.length < 20) ||
+    false;
 
   // const { mutate, isLoading, isError, error, isSuccess } = useMutation(newTodo => {
   //   return axios.post<TodoType>('/todos', newTodo);
@@ -68,7 +76,9 @@ function DirectMessage() {
       onMutate(mutateData: any) {
         queryClient.setQueryData<InfiniteData<IDM[]>>(
           ["workspace", workspace, "dm", id, "chat"],
+          //@ts-ignore
           (data: any) => {
+            console.log(data?.pageParams, "datatat mutatettatmtmt params");
             const newPages = data?.pages.slice() || [];
             newPages[0].unshift({
               id: (data?.pages[0][0]?.id || 0) + 1,
@@ -79,7 +89,6 @@ function DirectMessage() {
               Receiver: userData,
               createdAt: new Date(),
             });
-            console.log("data 확인", newPages);
             return {
               pageParams: data?.pageParams || [],
               pages: newPages,
@@ -87,16 +96,26 @@ function DirectMessage() {
           }
         );
         setChat("");
-        // scrollbarRef.current?.scrollToBottom();
+        scrollbarRef.current?.scrollToBottom();
       },
       onError(error: any) {
         console.error(error, "error");
       },
       onSuccess() {
-        queryClient.refetchQueries(["workspace", workspace, "dm", id, "chat"]);
+        //캐시된 모든 페이지의 데이터를 가져옴...??
+        // queryClient.refetchQueries(["workspace", workspace, "dm", id, "chat"]);
       },
     }
   );
+
+  // 로딩 시 스크롤바 제일 아래로
+  useEffect(() => {
+    if (chatData?.pages.length === 1) {
+      setTimeout(() => {
+        scrollbarRef.current?.scrollToBottom();
+      }, 100);
+    }
+  }, [chatData]);
 
   const onSubmitForm = useCallback(
     (e: any) => {
@@ -113,14 +132,14 @@ function DirectMessage() {
         //     { withCredentials: true }
         //   )
         //   .then(() => {
-        //     queryClient.refetchQueries([
-        //       "workspace",
-        //       workspace,
-        //       "dm",
-        //       id,
-        //       "chat",
-        //     ]);
-        //     setChat("");
+        //     // queryClient.refetchQueries([
+        //     //   "workspace",
+        //     //   workspace,
+        //     //   "dm",
+        //     //   id,
+        //     //   "chat",
+        //     // ]);
+        //     // setChat("");
         //   })
         //   .catch((err) => console.log("err", err));
       }
@@ -135,7 +154,7 @@ function DirectMessage() {
   const chatSections = makeSection(
     chatData ? chatData.pages.flat().reverse() : []
   );
-  console.log(chatSections, "chatSection");
+  console.log(chatData, "chatdata  dddddd");
   return (
     <Container>
       <Header>
@@ -149,9 +168,9 @@ function DirectMessage() {
         // //@ts-ignore
         // chatData={chatData?.pages[0] || []}
         chatSections={chatSections}
-        // ref={scrollbarRef}
-        // fetchNext={fetchNextPage}
-        // isReachingEnd={isReachingEnd}
+        ref={scrollbarRef}
+        fetchNext={fetchNextPage}
+        isReachingEnd={isReachingEnd}
       />
       <ChatBox
         chat={chat}
