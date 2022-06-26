@@ -18,6 +18,7 @@ const useSocket = (
     return [undefined, disconnect];
   }
   if (!sockets[workspace]) {
+    console.log("소켓연결");
     sockets[workspace] = io.connect(`${backUrl}/ws-${workspace}`, {
       transports: ["websocket"],
     });

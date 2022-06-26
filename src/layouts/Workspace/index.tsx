@@ -85,6 +85,12 @@ function Workspace() {
   //   );
 
   useEffect(() => {
+    return () => {
+      disconnect();
+    };
+  }, [workspace, disconnect]);
+
+  useEffect(() => {
     if (channelData && userData && socket) {
       console.log(socket, "소켓확인");
       socket.emit("login", {
@@ -93,12 +99,6 @@ function Workspace() {
       });
     }
   }, [channelData, userData, socket]);
-
-  useEffect(() => {
-    return () => {
-      disconnect();
-    };
-  }, [workspace, disconnect]);
   const onLogout = useCallback(() => {
     request
       .post("/api/users/logout", null, {

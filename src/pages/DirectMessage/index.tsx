@@ -18,10 +18,13 @@ import request from "../../api/api";
 import ChatList from "../../components/ChatList";
 import makeSection from "../../utils/makeSection";
 import Scrollbars from "react-custom-scrollbars-2";
+import useSocket from "../../hooks/useSocket";
+import { toast } from "react-toastify";
 function DirectMessage() {
   const queryClient = useQueryClient();
   const scrollbarRef = useRef<Scrollbars>(null);
   const { workspace, id } = useParams<{ workspace: string; id: string }>();
+  const [socket] = useSocket(workspace);
   const { data: userData } = useQuery(
     ["workspace", workspace, "users", id],
     () => fetcher({ queryKey: `/api/workspaces/${workspace}/users/${id}` })
@@ -107,6 +110,54 @@ function DirectMessage() {
       },
     }
   );
+
+  const onMessage = useCallback(
+    (data: IDM) => {
+      // id는 상대방 아이디
+      if (data.SenderId === Number(id) && myData.id !== Number(id)) {
+        queryClient.setQueryData<InfiniteData<IDM[]>>(
+          ["workspace", workspace, "dm", id, "chat"],
+          (prev) => {
+            const newPages = prev?.pages.slice() || [];
+            newPages[0].unshift(data);
+            return {
+              pageParams: prev?.pageParams || [],
+              pages: newPages,
+            };
+          }
+        );
+        if (scrollbarRef.current) {
+          if (
+            scrollbarRef.current.getScrollHeight() <
+            scrollbarRef.current.getClientHeight() +
+              scrollbarRef.current.getScrollTop() +
+              150
+          ) {
+            console.log("scrollToBottom!", scrollbarRef.current?.getValues());
+            setTimeout(() => {
+              scrollbarRef.current?.scrollToBottom();
+            }, 100);
+          } else {
+            toast.success("새 메시지가 도착했습니다.", {
+              onClick() {
+                scrollbarRef.current?.scrollToBottom();
+              },
+              closeOnClick: true,
+            });
+          }
+        }
+      }
+    },
+    [workspace, id, myData.id, queryClient]
+  );
+
+  useEffect(() => {
+    socket?.on("dm", onMessage);
+    console.log("socket dm", onMessage);
+    return () => {
+      socket?.off("dm", onMessage);
+    };
+  }, [socket, onMessage]);
 
   // 로딩 시 스크롤바 제일 아래로
   useEffect(() => {
