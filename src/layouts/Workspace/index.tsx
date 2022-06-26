@@ -33,6 +33,7 @@ import request from "../../api/api";
 import ChatList from "../../components/ChatList";
 import DMList from "../../components/DMList";
 import useSocket from "../../hooks/useSocket";
+import ChannelList from "../../components/ChannelList";
 type Props = {
   children?: React.ReactNode;
 };
@@ -233,7 +234,7 @@ function Workspace() {
                 <button onClick={onLogout}>로그아웃</button>
               </WorkspaceModal>
             </Menu>
-            <ChatList />
+            <ChannelList />
             <DMList />
           </MenuScroll>
         </Channels>
