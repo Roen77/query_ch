@@ -1,11 +1,8 @@
-import React, { useCallback, useState } from "react";
-import { useQuery } from "react-query";
-import { NavLink, useParams } from "react-router-dom";
+import React, { useCallback, useRef } from "react";
 import { IChannel, IDM, IUser } from "../../typings/db";
-import fetcher from "../../utils/fetcher";
 import Chat from "../Chat";
-import { CollapseButton } from "../DMList/styles";
 import { ChatZone } from "./styles";
+import { Scrollbars } from "react-custom-scrollbars-2";
 
 interface Props {
   chatData?: IDM[];
@@ -13,11 +10,15 @@ interface Props {
 
 function ChatList({ chatData }: Props) {
   console.log(chatData, "ccccccccccccc");
+  const scrollbarRef = useRef(null);
+  const onScroll = useCallback(() => {}, []);
   return (
     <ChatZone>
-      {chatData?.map((chat) => (
-        <Chat key={chat.id} data={chat} />
-      ))}
+      <Scrollbars autoHide ref={scrollbarRef} onScrollFrame={onScroll}>
+        {chatData?.map((chat) => (
+          <Chat key={chat.id} data={chat} />
+        ))}
+      </Scrollbars>
     </ChatZone>
   );
 }
