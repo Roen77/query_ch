@@ -15,6 +15,7 @@ import ChatBox from "../../components/ChatBox";
 import { IDM } from "../../typings/db";
 import { AxiosError } from "axios";
 import request from "../../api/api";
+import ChatList from "../../components/ChatList";
 function DirectMessage() {
   const queryClient = useQueryClient();
   const { workspace, id } = useParams<{ workspace: string; id: string }>();
@@ -126,7 +127,7 @@ function DirectMessage() {
 
     [mutation, chat, chatData]
   );
-
+  console.log("chatdata", chatData);
   if (!userData || !myData) {
     return null;
   }
@@ -139,12 +140,14 @@ function DirectMessage() {
         />
         <span>{userData.nickname}</span>
       </Header>
-      {/* <ChatList
-        chatSections={chatSections}
-        ref={scrollbarRef}
-        fetchNext={fetchNextPage}
-        isReachingEnd={isReachingEnd}
-      /> */}
+      <ChatList
+        //@ts-ignore
+        chatData={chatData.pages[0]}
+        // chatSections={chatSections}
+        // ref={scrollbarRef}
+        // fetchNext={fetchNextPage}
+        // isReachingEnd={isReachingEnd}
+      />
       <ChatBox
         chat={chat}
         onChangeChat={onChangeChat}
