@@ -7,6 +7,7 @@ import { NavLink } from "react-router-dom";
 import { IChannel, IUser } from "../../typings/db";
 import fetcher from "../../utils/fetcher";
 import { CollapseButton } from "../DMList/styles";
+import EachChannel from "../EachChannel";
 
 const ChannelList: FC = () => {
   const { workspace } = useParams<{ workspace?: string }>();
@@ -47,6 +48,12 @@ const ChannelList: FC = () => {
       <div>
         {!channelCollapse &&
           channelData?.map((channel) => {
+            return <EachChannel key={channel.id} channel={channel} />;
+          })}
+      </div>
+      {/* <div>
+        {!channelCollapse &&
+          channelData?.map((channel) => {
             return (
               <NavLink
                 key={channel.name}
@@ -59,7 +66,7 @@ const ChannelList: FC = () => {
               </NavLink>
             );
           })}
-      </div>
+      </div> */}
     </>
   );
 };
