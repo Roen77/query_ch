@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import { Container, Header } from "./styles";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Container, DragOver, Header } from "./styles";
 import gravatar from "gravatar";
 import {
   InfiniteData,
@@ -56,6 +56,7 @@ function DirectMessage() {
     }
   );
   const [chat, onChangeChat, setChat] = useInput("");
+  const [dragOver, setDragOver] = useState(false);
   const isEmpty = chatData?.pages[0]?.length === 0;
   const isReachingEnd =
     isEmpty ||
@@ -199,6 +200,54 @@ function DirectMessage() {
 
     [mutation, chat, chatData]
   );
+
+  const onDrop = useCallback(
+    (e: any) => {
+      e.preventDefault();
+      console.log(e);
+      const formData = new FormData();
+      if (e.dataTransfer.items) {
+        // Use DataTransferItemList interface to access the file(s)
+        for (let i = 0; i < e.dataTransfer.items.length; i++) {
+          // If dropped items aren't files, reject them
+          if (e.dataTransfer.items[i].kind === "file") {
+            const file = e.dataTransfer.items[i].getAsFile();
+            console.log("... file[" + i + "].name = " + file.name);
+            formData.append("image", file);
+          }
+        }
+      } else {
+        // Use DataTransfer interface to access the file(s)
+        for (let i = 0; i < e.dataTransfer.files.length; i++) {
+          console.log(
+            "... file[" + i + "].name = " + e.dataTransfer.files[i].name
+          );
+          formData.append("image", e.dataTransfer.files[i]);
+        }
+      }
+      request
+        .post(`/api/workspaces/${workspace}/dms/${id}/images`, formData, {
+          withCredentials: true,
+        })
+        .then(() => {
+          setDragOver(false);
+          queryClient.refetchQueries([
+            "workspace",
+            workspace,
+            "dm",
+            id,
+            "chat",
+          ]);
+        });
+    },
+    [queryClient, workspace, id]
+  );
+
+  const onDragOver = useCallback((e: any) => {
+    e.preventDefault();
+    console.log(e);
+    setDragOver(true);
+  }, []);
   if (!userData || !myData) {
     return null;
   }
@@ -208,7 +257,7 @@ function DirectMessage() {
   );
   console.log(chatData, "chatdata  dddddd");
   return (
-    <Container>
+    <Container onDrop={onDrop} onDragOver={onDragOver}>
       <Header>
         <img
           src={gravatar.url(userData.email, { s: "24px", d: "retro" })}
@@ -229,6 +278,7 @@ function DirectMessage() {
         onChangeChat={onChangeChat}
         onSubmitForm={onSubmitForm}
       />
+      {dragOver && <DragOver>업로드!</DragOver>}
     </Container>
   );
 }
