@@ -10,4 +10,6 @@ const fetcher = async ({ queryKey, log }: { queryKey: string, log:string }) => {
   return response.data;
 };
 
+
+
 export default fetcher;

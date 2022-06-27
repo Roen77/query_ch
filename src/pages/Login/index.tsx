@@ -2,6 +2,7 @@ import axios, { AxiosError } from "axios";
 import React, { useCallback, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Navigate, useNavigate } from "react-router-dom";
+import request from "../../api/api";
 import useInput from "../../hooks/useInput";
 import { IUser } from "../../typings/db";
 import fetcher from "../../utils/fetcher";
@@ -30,7 +31,7 @@ const Login = () => {
   >(
     "user",
     (data) =>
-      axios
+      request
         .post("/api/users/login", data, {
           withCredentials: true,
         })

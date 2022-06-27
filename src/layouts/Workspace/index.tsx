@@ -38,8 +38,9 @@ import InviteWorkspaceModal from "../../components/InviteWorkspaceModal";
 import InviteChannelModal from "../../components/InviteChannelModal";
 import CreateChannelModal from "../../components/CreateChannelModal";
 import request from "../../api/api";
-import ChatList from "../../components/ChatList";
+import ChatList from "../../components/ChannelList";
 import DMList from "../../components/DMList";
+import ChannelList from "../../components/ChannelList";
 type Props = {
   children?: React.ReactNode;
 };
@@ -108,6 +109,7 @@ function Workspace() {
     setShowCreateWorkspaceModal(true);
   }, []);
   const onCloseModal = useCallback(() => {
+    console.log("close click")
     setShowCreateWorkspaceModal(false);
     setShowCreateChannelModal(false);
     setShowInviteWorkspaceModal(false);
@@ -222,7 +224,7 @@ function Workspace() {
                 <button onClick={onLogout}>로그아웃</button>
               </WorkspaceModal>
             </Menu>
-           <ChatList/>
+           <ChannelList/>
            <DMList/>
           </MenuScroll>
         </Channels>

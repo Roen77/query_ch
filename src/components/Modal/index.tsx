@@ -14,6 +14,7 @@ function Modal({ children, show, onCloseModal }: Props) {
   if (!show) {
     return null;
   }
+  //부모 눌러도 닫히고 버튼을 눌러도 닫힘
   return (
     <CreateModal onClick={onCloseModal}>
       <div onClick={stopPropagation}>

@@ -1,8 +1,11 @@
 import styled from '@emotion/styled';
 
+// 부모 화면 전체
+// >div 실제 모달
 export const CreateModal = styled.div`
   position: fixed;
   text-align: center;
+  background:lightpink;
   left: 0;
   bottom: 0;
   top: 0;
@@ -34,3 +37,4 @@ export const CloseModalButton = styled.button`
   font-size: 30px;
   cursor: pointer;
 `;
+// background-color: rgba(var(--sk_foreground_min_solid, 248, 248, 248), 1);
