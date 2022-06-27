@@ -175,7 +175,7 @@ function Workspace() {
         <RightMenu>
           <span onClick={onClickProfile}>
             <ProfileImg
-              src={gravatar.url(userData.nickname, { s: "26", d: "retro" })}
+              src={gravatar.url(userData.email, { s: "26", d: "retro" })}
               alt={userData.nickname}
             />
             {showUserMenu && (
@@ -186,7 +186,7 @@ function Workspace() {
               >
                 <ProfileModal>
                   <img
-                    src={gravatar.url(userData.nickname, {
+                    src={gravatar.url(userData.email, {
                       s: "36px",
                       d: "retro",
                     })}

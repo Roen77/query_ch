@@ -12,6 +12,7 @@ interface Props {
 
 function Chat({ data }: Props) {
   const { workspace } = useParams<{ workspace: string; channel: string }>();
+  // dm 인지 chat인지 구분하는 역할
   const user = "Sender" in data ? data.Sender : data.User;
   //캐싱을 하고 캐싱을 풀 조건을 디펜던시에 적어준다고 생각하면 됨
   const result = useMemo(

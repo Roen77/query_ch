@@ -52,6 +52,7 @@ function DirectMessage() {
         if (lastPage.length === 0) return;
         return pages.length;
       },
+      // staleTime: 5000,
     }
   );
   const [chat, onChangeChat, setChat] = useInput("");
