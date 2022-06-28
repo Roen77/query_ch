@@ -1,11 +1,11 @@
 import React, { forwardRef, MutableRefObject, useCallback, useRef } from 'react'
-import { IDM } from '../../typings/db';
+import { IChat, IDM } from '../../typings/db';
 import Chat from '../Chat';
 import { ChatZone, Section, StickyHeader } from './styles';
 import { Scrollbars } from "react-custom-scrollbars-2";
 import { InfiniteQueryObserverResult } from 'react-query';
 interface Props {
-  chatSections:{[key:string]:IDM[]}
+  chatSections:{[key:string]:(IDM | IChat)[]}
   fetchNext : () => Promise<InfiniteQueryObserverResult>
   isReachingEnd :boolean
 }

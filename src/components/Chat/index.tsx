@@ -13,6 +13,8 @@ interface Props {
 function Chat({data}:Props) {
 
     const {workspace} = useParams<{workspace:string; channel:string}>()
+     // dm 인지 chat인지 구분하는 역할
+     const user = "Sender" in data? data.Sender : data.User
 
     const result = useMemo(()=> regexifyString({
         input:data.content,
@@ -37,7 +39,6 @@ function Chat({data}:Props) {
             }
     }),[data.content,workspace])
 
-    const user = "Sender" in data? data.Sender : data.User
   return (
     <ChatWrapper>
          <div className="chat-img">
