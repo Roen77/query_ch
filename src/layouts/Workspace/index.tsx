@@ -33,7 +33,7 @@ import { IChannel, IUser } from "../../typings/db";
 import Modal from "../../components/Modal";
 import { Button, Input, Label } from "../../pages/Signup/styles";
 import useInput from "../../hooks/useInput";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import InviteWorkspaceModal from "../../components/InviteWorkspaceModal";
 import InviteChannelModal from "../../components/InviteChannelModal";
 import CreateChannelModal from "../../components/CreateChannelModal";
@@ -287,6 +287,7 @@ function Workspace() {
         onCloseModal={onCloseModal}
         setShowInviteChannelModal={setShowInviteChannelModal}
       />
+          <ToastContainer />
     </div>
   );
 }

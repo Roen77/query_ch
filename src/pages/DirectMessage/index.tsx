@@ -13,6 +13,8 @@ import { AxiosError } from 'axios';
 import makeSection from '../../utils/makeSection';
 import Scrollbars from 'react-custom-scrollbars-2'
 import _ from 'lodash'
+import useSocket from '../../hooks/useSocket';
+import { toast, ToastContainer } from 'react-toastify';
 
 
 function DirectMessage() {
@@ -20,6 +22,7 @@ function DirectMessage() {
   const scrollbarRef = useRef<Scrollbars>(null)
   const [chat,onChangeChat,setChat] = useInput("")
     const { workspace, id } = useParams<{ workspace: string; id: string }>();
+    const [socket,disconnect] = useSocket(workspace)
     const { data: userData } = useQuery(['workspace', workspace, 'users', id], () =>
     fetcher({ queryKey: `/api/workspaces/${workspace}/users/${id}`,log:'dm-member' }),
   );
@@ -103,6 +106,63 @@ function DirectMessage() {
   const isEmpty = chatData?.pages[0]?.length === 0;
   const isReachingEnd = isEmpty || (chatData && chatData?.pages[chatData?.pages.length - 1]?.length < 20) || false;
 
+  // 받아온데이터로 어떻게할것인가
+  const onMessage = useCallback((data:IDM)=>{
+
+    console.log('받아온 데이터?', data)
+//     ReceiverId: 1
+// Sender: {id: 1, email: 'a@a.com', nickname: 'ron', password: '$2b$12$NxN/LMcYZ8XiSpXtw/euYucMtJhyH1JwwwSjPjr/JpxuHGcVGpGR.', createdAt: '2022-06-21T02:13:34.000Z', …}
+// SenderId: 1
+// WorkspaceId: 1
+// content: "내용전송"
+// createdAt: "2022-06-28T02:24:51.000Z"
+// id: 92
+// updatedAt: "2022-06-28T02:24:51.000Z"
+  // id는 상대방 아이디 즉 나아닌 다른사람일때만
+  // 즉 메세지가 왔을때 갱신이 필요
+if(data.SenderId === Number(id) && myData.id !== Number(id)) {
+  console.log("prev dm socket완료")
+  queryClient.setQueryData( ["workspace", workspace, "dm", id, "chat"], (prev:any) => {
+    const newPages = _.cloneDeep(prev?.pages) || [];
+    console.log('prev', newPages)
+    newPages[0].unshift(data)
+    return {
+      pageParams:prev?.pageParams || [],
+      pages:newPages
+    }
+  })
+
+  if(scrollbarRef.current){
+    // 요소를 끝까지 내렸는지 판별하는 법
+    if(scrollbarRef.current.getScrollHeight() <
+    scrollbarRef.current.getClientHeight() +
+      scrollbarRef.current.getScrollTop() +
+      150){
+        console.log("scrollToBottom!", scrollbarRef.current?.getValues());
+        setTimeout(() => {
+          scrollbarRef.current?.scrollToBottom();
+        }, 100);
+       } else {
+        toast.success("새 메시지가 도착했습니다.", {
+          onClick() {
+            scrollbarRef.current?.scrollToBottom();
+          },
+          closeOnClick: true,
+        });
+      }
+  }
+}
+
+  },[id, myData.id, queryClient, workspace])
+
+
+
+   useEffect(()=>{
+    socket?.on('dm', onMessage)
+    return () => {
+      socket?.off("dm",onMessage)
+    }
+   },[socket, onMessage])
   //로딩시 스크롤바 제일 아래로..
   useEffect(()=> {
     if(chatData?.pages.length === 1){
