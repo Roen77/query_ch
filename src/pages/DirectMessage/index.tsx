@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef } from 'react'
-import { Container, Header } from './styles'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { Container, DragOver, Header } from './styles'
 import gravatar from 'gravatar';
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
 import { useParams } from 'react-router-dom';
@@ -20,6 +20,7 @@ import { toast, ToastContainer } from 'react-toastify';
 function DirectMessage() {
   const queryClient = useQueryClient()
   const scrollbarRef = useRef<Scrollbars>(null)
+  const [dragOver, setDragOver] = useState(false);
   const [chat,onChangeChat,setChat] = useInput("")
     const { workspace, id } = useParams<{ workspace: string; id: string }>();
     const [socket,disconnect] = useSocket(workspace)
@@ -193,12 +194,64 @@ if(data.SenderId === Number(id) && myData.id !== Number(id)) {
     },[chat, chatData,mutation])
     // chatData?.pages[0], chatData?.pages.flat()
 
+    const onDrop = useCallback(
+      (e: React.DragEvent) => {
+        e.preventDefault();
+        console.log(e.dataTransfer ,'dr');
+        // e.dataTransfer
+        // dropEffect: "none"
+        // effectAllowed: "all"
+        // files: FileList {length: 0}
+        // items: DataTransferItemList {length: 0}
+        // types: []
+        // [[Prototype]]: DataTransfer
+        const formData = new FormData();
+        if(e.dataTransfer.items){
+          for(let i = 0; i < e.dataTransfer.items.length ; i++){
+              if(e.dataTransfer.items[i].kind === 'file'){
+                const file = e.dataTransfer.items[i].getAsFile();
+                console.log("items dr ... file[" + i + "].name = " + (file as File).name);
+                formData.append("image", (file as File));
+              }
+          }
+        }else {
+          for (let i = 0; i < e.dataTransfer.files.length; i++) {
+            console.log(
+              "files dr ... file[" + i + "].name = " + e.dataTransfer.files[i].name
+            );
+            formData.append("image", e.dataTransfer.files[i]);
+          }
+        }
+        request
+        .post(`/api/workspaces/${workspace}/dms/${id}/images`, formData, {
+          withCredentials: true,
+        })
+        .then(() => {
+          setDragOver(false);
+          queryClient.refetchQueries([
+            "workspace",
+            workspace,
+            "dm",
+            id,
+            "chat",
+          ]);
+        });
+      },
+      [queryClient, workspace,id]
+    );
+    const onDragOver = useCallback((e:any)=>{
+      e.preventDefault();
+      console.log('onDragOver dr')
+      setDragOver(true)
+    },[])
+
     const chatSections = makeSection(chatData? chatData.pages.flat().reverse():[])
   if(!userData || !myData){
     return null
   }
   return (
-    <Container>
+    //onDragStart로하면 안됨
+    <Container onDrop = {onDrop} onDragOver= {onDragOver}>
     <Header>
       <img src={gravatar.url(userData.email, { s: '24px', d: 'retro' })} alt={userData.nickname} />
       <span>{userData.nickname}</span>
@@ -206,6 +259,7 @@ if(data.SenderId === Number(id) && myData.id !== Number(id)) {
     {/* <ChatList chatData={chatData?.pages[0] || []}/> */}
     <ChatList  chatSections ={ chatSections } ref = {scrollbarRef} fetchNext = {fetchNextPage} isReachingEnd = {isReachingEnd} />
     <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm}/>
+    {dragOver && <DragOver>업로드!</DragOver>}
   </Container>
   )
 }
