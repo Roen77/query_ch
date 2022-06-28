@@ -4,6 +4,7 @@ import { NavLink, useParams } from 'react-router-dom';
 import { IChannel, IUser } from '../../typings/db';
 import fetcher from '../../utils/fetcher';
 import { CollapseButton } from '../DMList/styles';
+import EachChannel from '../EachChannel';
 
 function ChannelList() {
     const {workspace} = useParams<{workspace? :string}>();
@@ -34,20 +35,9 @@ function ChannelList() {
             <span>Channels</span>
           </h2>
           <div>
-            {!channelCollapse &&
-              channelData?.map((channel) => {
-                return (
-                  <NavLink
-                    key={channel.name}
-                    className={({ isActive }) =>
-                  isActive ? "selected" : undefined
-                }
-                    to={`/workspace/${workspace}/channel/${channel.name}`}
-                  >
-                    <span># {channel.name}</span>
-                  </NavLink>
-                );
-              })}
+            {!channelCollapse && channelData?.map(channel => {
+              return <EachChannel key={channel.id} channel = {channel}/>
+            })}
           </div>
         </>
       );

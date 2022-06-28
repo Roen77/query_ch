@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
 import { Navigate, useParams } from "react-router-dom";
 import request from "../../api/api";
@@ -90,6 +90,7 @@ function Channel() {
         console.error(error, "error");
       },
       onSuccess() {
+        localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
         queryClient.refetchQueries([
           "workspace",
           workspace,
@@ -102,6 +103,11 @@ function Channel() {
 
     console.log("channel",channelData)
   const [chat,onChangeChat, setChat] = useInput("")
+
+  useEffect(() => {
+    localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
+  }, [workspace, channel]);
+
 
   const onClickInviteChannel = useCallback(()=>{},[])
 
