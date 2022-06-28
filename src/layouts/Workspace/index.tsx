@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import {
   Link,
@@ -41,6 +41,7 @@ import request from "../../api/api";
 import ChatList from "../../components/ChannelList";
 import DMList from "../../components/DMList";
 import ChannelList from "../../components/ChannelList";
+import useSocket from "../../hooks/useSocket";
 type Props = {
   children?: React.ReactNode;
 };
@@ -62,6 +63,8 @@ function Workspace() {
   const [newWorkspace, onChangeNewWorkspace, setNewWorkpsace] = useInput("");
   const [newUrl, onChangeNewUrl, setNewUrl] = useInput("");
   const { workspace } = useParams<{ workspace: string }>();
+  //socket
+  const [socket, disconnect] = useSocket(workspace)
   const queryClient = useQueryClient();
   const { data: userData } = useQuery<IUser | false>(
     "user",
@@ -89,6 +92,23 @@ function Workspace() {
   //     "user",
   //     () => fetcher({ queryKey: "/api/users", log:'workspace' })
   //   );
+
+  useEffect(()=>{
+    if(channelData && userData && socket){
+      console.log('socket login emit')
+      socket.emit('login',{
+        id:userData.id,
+        channels:channelData.map(v=>v.id)
+      })
+    }
+  },[channelData, userData, socket ])
+
+  useEffect(()=>{
+    return () => {
+      disconnect()
+    }
+    //workspace 가 변할떄 disconnect시켜주기 위해 넣음
+  },[disconnect, workspace])
   const onLogout = useCallback(() => {
     request
       .post("/api/users/logout", null, {
@@ -198,7 +218,7 @@ function Workspace() {
         <Workspaces>
           {userData?.Workspaces.map((ws) => {
             return (
-              <Link key={ws.id} to={`/workspace/${123}/channel/일반`}>
+              <Link key={ws.id} to={`/workspace/${ws.url}/channel/일반`}>
                 <WorkspaceButton>
                   {ws.name.slice(0, 1).toUpperCase()}
                 </WorkspaceButton>

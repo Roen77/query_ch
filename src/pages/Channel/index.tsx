@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useQuery } from "react-query";
+import ChannelList from "../../components/ChannelList";
 import ChatBox from "../../components/ChatBox";
-import ChatList from "../../components/ChatList";
 import useInput from "../../hooks/useInput";
 import fetcher from "../../utils/fetcher";
 import { Container, Header } from "./styles";
@@ -17,7 +17,6 @@ function Channel() {
   return (
     <Container>
       <Header>채널!</Header>
-      <ChatList/>
       <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm}/>
     </Container>
   );

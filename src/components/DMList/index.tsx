@@ -1,6 +1,7 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useQuery } from 'react-query';
 import { NavLink, useParams } from 'react-router-dom';
+import useSocket from '../../hooks/useSocket';
 import { IUser, IUserWithOnline } from '../../typings/db';
 import fetcher from '../../utils/fetcher';
 import { CollapseButton } from './styles';
@@ -14,9 +15,23 @@ function DMList() {
       () => fetcher({ queryKey: `/api/workspaces/${workspace}/members` , log:'workspace-dmlist-member'}),
       { enabled: !!userData },
     );
-
+      const [socket, disconnect] = useSocket(workspace)
     const [channelCollapse, setChannelCollapse] = useState(false);
     const [onlineList, setOnlineList] = useState<number[]>([]);
+    // workspace바뀌면 초기화시키기
+    useEffect(()=>{
+      console.log("DMList: workspace 바꼈다", workspace);
+      setOnlineList([]);
+    },[workspace])
+
+    useEffect(()=>{
+      socket?.on("onlineList", (data:number[])=> {
+        setOnlineList(data)
+      })
+      return () => {
+        socket?.off("onlineList")
+      }
+    },[socket])
 
     const toggleChannelCollapse = useCallback(() => {
         setChannelCollapse((prev) => !prev);

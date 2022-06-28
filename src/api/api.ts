@@ -1,9 +1,10 @@
 import axios from "axios";
 
+export const baseURL = 'http://localhost:3105'
 
 
 const request = axios.create({
-    baseURL:'http://localhost:3105'
+    baseURL
 })
 
 export default request

@@ -5,7 +5,7 @@ import styled from '@emotion/styled';
 export const CreateModal = styled.div`
   position: fixed;
   text-align: center;
-  background:lightpink;
+  background:white;
   left: 0;
   bottom: 0;
   top: 0;
